@@ -82,7 +82,7 @@ public class KaptchaController {
      * 校对验证码
      */
     @RequestMapping("/Validate")
-    public ModelAndView imgvrifyControllerDefaultKaptcha(HttpServletRequest request,String tryCode) {
+    public ModelAndView imgvrifyControllerDefaultKaptcha(HttpServletRequest request, String tryCode) {
         ModelAndView model = new ModelAndView();
         String rightCode = (String) request.getSession().getAttribute("rightCode");
         System.out.println("rightCode:" + rightCode + " ———— tryCode:" + tryCode);
@@ -105,12 +105,18 @@ public class KaptchaController {
     }
 
     @RequestMapping("/ValidateCode")
-    public Boolean ValidateCode(HttpServletRequest request, String code) {
+    @ResponseBody
+    public Map<String, Object> ValidateCode(HttpServletRequest request, String code) {
         String validateCode = request.getSession().getAttribute("rightCode").toString();
-        if (validateCode.equals(code)) {
-            return true;
-        } else {
-            return false;
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if (validateCode == null) {
+            map.put("status", null);//验证码过期
+        } else if (validateCode.equals(code)) {
+            map.put("status", true);//验证码正确
+        } else if (!validateCode.equals(validateCode)) {
+            map.put("status", false);//验证码不正确
         }
+        map.put("code", 200);
+        return map;
     }
 }
